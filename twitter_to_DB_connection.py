@@ -25,7 +25,12 @@ class MyStreamlistener(tweepy.StreamListener):
             if 'text' in raw_data:
                 username = raw_data['user']['screen_name']
                 created_at = parser.parse(raw_data['created_at'])
-                tweet = raw_data['text']
+                
+                if raw_data['truncated']:
+                    tweet = raw_data['extended_tweet']['full_text']
+                else:
+                    tweet = raw_data['text']
+                
                 retweet_count = raw_data['retweet_count']
                     
                 if raw_data['place'] is not None:
