@@ -60,7 +60,20 @@ def storeTweet(username, created_at, tweet, retweet_count, place, location):
     try:
         conn = pg2.connect("dbname='twitterDB' user='postgres' \
                            host='localhost' port='5432' password='postgres'")
-        cur = conn.cursor()
+        
+        if conn.closed == 0:  # checks if connection is active
+            cur = conn.cursor()    
+            querry = 'INSERT INTO tweets (username,time_created,tweet,retweet_count,place,location_tweet) VALUES (%s, %s, %s, %s, %s, %s)'
+            #inserting tweets into the DB
+            cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
+            conn.commit()
+            
+    except Exception as e:
+        print(e)
+    
+    cur.close()
+    conn.close()
+    
         
 if __name__ == "__main__":
     
@@ -87,5 +100,15 @@ if __name__ == "__main__":
     stream = tweepy.Stream(auth, listener = listener)
 
     stream.sample(languages =["en"])
-
- 
+    
+    
+    #testing storeTweet function
+    
+    username = 'whodiniz'
+    created_at = '2019-01-15 13:02:02+00:00'
+    tweet = 'Future confirms Travis Scott and Young Thug for The WIZRD https://t.co/pmp0L1A5Mt #NewMusic #HipHop #rap New Album… https://t.co/cCTO5j0v7U'
+    retweet_count = 0
+    place = None
+    location = 'Mars'
+    
+    storeTweet(username, created_at, tweet, retweet_count, place, location)
