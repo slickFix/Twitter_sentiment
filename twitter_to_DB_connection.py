@@ -41,7 +41,8 @@ class MyStreamlistener(tweepy.StreamListener):
                 location = raw_data['user']['location']
 
 			    #insert data just collected into postgreSQL
-                #storeTweet(username, created_at, tweet, retweet_count, place, location)
+                
+                storeTweet(username, created_at, tweet, retweet_count, place, location)
                 print(username, created_at, tweet, retweet_count, place, location, sep='*')
                 print('---------------')
 
@@ -102,13 +103,15 @@ if __name__ == "__main__":
     stream.sample(languages =["en"])
     
     
-    #testing storeTweet function
-    
-    username = 'whodiniz'
-    created_at = '2019-01-15 13:02:02+00:00'
-    tweet = 'Future confirms Travis Scott and Young Thug for The WIZRD https://t.co/pmp0L1A5Mt #NewMusic #HipHop #rap New Album… https://t.co/cCTO5j0v7U'
-    retweet_count = 0
-    place = None
-    location = 'Mars'
-    
-    storeTweet(username, created_at, tweet, retweet_count, place, location)
+# =============================================================================
+#     #testing storeTweet function
+#     
+#     username = 'whodiniz'
+#     created_at = '2019-01-15 13:02:02+00:00'
+#     tweet = 'Future confirms Travis Scott and Young Thug for The WIZRD https://t.co/pmp0L1A5Mt #NewMusic #HipHop #rap New Album… https://t.co/cCTO5j0v7U'
+#     retweet_count = 0
+#     place = None
+#     location = 'Mars'
+#     
+#     storeTweet(username, created_at, tweet, retweet_count, place, location)
+# =============================================================================
