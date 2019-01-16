@@ -79,15 +79,15 @@ def storeTweetTimeline(username, created_at, tweet, retweet_count, place, locati
     
     #connecting and storing the tweets into the timeline_tweets table
     try:
-    conn = pg2.connect("dbname='twitterDB' user='postgres' \
-                       host='localhost' port='5432' password='postgres'")
-    
-    if conn.closed == 0:  # checks if connection is active
-        cur = conn.cursor()    
-        querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
-        #inserting tweets into the DB
-        cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
-        conn.commit()
+        conn = pg2.connect("dbname='twitterDB' user='postgres' \
+                           host='localhost' port='5432' password='postgres'")
+        
+        if conn.closed == 0:  # checks if connection is active
+            cur = conn.cursor()    
+            querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
+            #inserting tweets into the DB
+            cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
+            conn.commit()
             
     except Exception as e:
         print(e)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     api = tweepy.API(auth,wait_on_rate_limit=True,wait_on_rate_limit_notify=True)
     
     
-    twitter_data_type = int(input("Press 1 for twitter data, Press 2 for twitter home timeline data))
+    twitter_data_type = int(input("Press 1 for twitter data, Press 2 for twitter home timeline data   "))
     
     
     if twitter_data_type == 1:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     
         stream.sample(languages =["en"])
         
-    else :
+    if twitter_data_type == 2:
         #creating cursor for home timeline browsing 
         
         for status in tweepy.Cursor(api.home_timeline, screen_name='@sidd_shukla08', tweet_mode="extended").items():
@@ -152,7 +152,8 @@ if __name__ == "__main__":
             print(username, created_at, tweet, retweet_count, place, location, sep='*')
             print('---------------')
 
-
+    else:
+        print("Response was neither 1 nor 2")
     
 # =============================================================================
 #     #testing storeTweet function
