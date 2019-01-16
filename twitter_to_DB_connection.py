@@ -20,7 +20,6 @@ def storeTweet(username, created_at, tweet, retweet_count, place, location):
         conn = pg2.connect("dbname='twitterDB' user='postgres' \
                            host='localhost' port='5432' password='postgres'")
         
-        print('he')
         if conn.closed == 0:  # checks if connection is active
             cur = conn.cursor()    
             querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
