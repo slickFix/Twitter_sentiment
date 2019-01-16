@@ -20,9 +20,10 @@ def storeTweet(username, created_at, tweet, retweet_count, place, location):
         conn = pg2.connect("dbname='twitterDB' user='postgres' \
                            host='localhost' port='5432' password='postgres'")
         
+        print('he')
         if conn.closed == 0:  # checks if connection is active
             cur = conn.cursor()    
-            querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place,location_tweet) VALUES (%s, %s, %s, %s, %s, %s)'
+            querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
             #inserting tweets into the DB
             cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
             conn.commit()
@@ -74,7 +75,7 @@ if __name__ == "__main__":
         location = val_dict['user']['location']
 
 		#insert data just collected into postgreSQL
-        #storeTweet(username, created_at, tweet, retweet_count, place, location)
+        storeTweet(username, created_at, tweet, retweet_count, place, location)
         print(username, created_at, tweet, retweet_count, place, location, sep='*')
         print('---------------')
 
