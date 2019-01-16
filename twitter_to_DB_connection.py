@@ -57,7 +57,7 @@ class MyStreamlistener(tweepy.StreamListener):
 
 def storeTweet(username, created_at, tweet, retweet_count, place, location):
 
-    #connecting and storing the tweets into the DB
+    #connecting and storing the tweets into the "tweets" table
     try:
         conn = pg2.connect("dbname='twitterDB' user='postgres' \
                            host='localhost' port='5432' password='postgres'")
