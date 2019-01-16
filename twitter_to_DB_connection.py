@@ -56,7 +56,7 @@ if __name__ == "__main__":
     
     #creating cursor for home timeline browsing 
     
-    for status in tweepy.Cursor(api.home_timeline, screen_name='@sidd_shukla08', tweet_mode="extended").items(5):
+    for status in tweepy.Cursor(api.home_timeline, screen_name='@sidd_shukla08', tweet_mode="extended").items():
         val = json.dumps(status._json)
         val_dict = json.loads(val)
 
