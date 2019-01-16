@@ -12,49 +12,26 @@ import json
 
 from dateutil import parser
 
-
-class MyStreamlistener(tweepy.StreamListener):
+def storeTweetTimeline(username, created_at, tweet, retweet_count, place, location):
     
-    def on_connect(self):
-        print("Connected to twitter API")
-                
-    def on_data(self,data):
-        try:
-            raw_data = json.loads(data)
-         
-            if 'text' in raw_data:
-                username = raw_data['user']['screen_name']
-                created_at = parser.parse(raw_data['created_at'])
-                
-                if raw_data['truncated']:
-                    tweet = raw_data['extended_tweet']['full_text']
-                else:
-                    tweet = raw_data['text']
-                
-                retweet_count = raw_data['retweet_count']
-                    
-                if raw_data['place'] is not None:
-                    place = raw_data['place']['country']
-                else:
-                    place = None
-                
-                location = raw_data['user']['location']
-
-			    #insert data just collected into postgreSQL
-                
-                storeTweet(username, created_at, tweet, retweet_count, place, location)
-                print(username, created_at, tweet, retweet_count, place, location, sep='*')
-                print('---------------')
-
-        except Exception as e:
-            print(e)
-        
-    def on_error(self,status_code):
-        if status_code !=200:
-            print("error found {}".format(status_code))
-            return False
-
-
+    #connecting and storing the tweets into the timeline_tweets table
+    try:
+    conn = pg2.connect("dbname='twitterDB' user='postgres' \
+                       host='localhost' port='5432' password='postgres'")
+    
+    if conn.closed == 0:  # checks if connection is active
+        cur = conn.cursor()    
+        querry = 'INSERT INTO timeline_tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
+        #inserting tweets into the DB
+        cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
+        conn.commit()
+            
+    except Exception as e:
+        print(e)
+    
+    cur.close()
+    conn.close()
+    
 def storeTweet(username, created_at, tweet, retweet_count, place, location):
 
     #connecting and storing the tweets into the "tweets" table
@@ -64,7 +41,7 @@ def storeTweet(username, created_at, tweet, retweet_count, place, location):
         
         if conn.closed == 0:  # checks if connection is active
             cur = conn.cursor()    
-            querry = 'INSERT INTO tweets (username,time_created,tweet,retweet_count,place,location_tweet) VALUES (%s, %s, %s, %s, %s, %s)'
+            querry = 'INSERT INTO tweets (username,time_created,tweet,retweet_count,place_tweet,location_user) VALUES (%s, %s, %s, %s, %s, %s)'
             #inserting tweets into the DB
             cur.execute(querry,(username, created_at, tweet, retweet_count, place, location))
             conn.commit()
@@ -95,13 +72,32 @@ if __name__ == "__main__":
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth,wait_on_rate_limit=True,wait_on_rate_limit_notify=True)
     
-    #creating streamlistener object
-    listener = MyStreamlistener(api = api)
+    #creating cursor for home timeline browsing 
     
-    stream = tweepy.Stream(auth, listener = listener)
+    for status in tweepy.Cursor(api.home_timeline, screen_name='@sidd_shukla08', tweet_mode="extended").items():
+        val = json.dumps(status._json)
+        val_dict = json.loads(val)
 
-    stream.sample(languages =["en"])
-    
+        username = val_dict['user']['screen_name']
+        created_at = parser.parse(val_dict['created_at'])
+
+        tweet = val_dict['full_text']
+        
+        retweet_count = val_dict['retweet_count']
+            
+        if val_dict['place'] is not None:
+            place = val_dict['place']['country']
+        else:
+            place = None
+        
+        location = val_dict['user']['location']
+
+		#insert data just collected into postgreSQL
+        storeTweet(username, created_at, tweet, retweet_count, place, location)
+        print(username, created_at, tweet, retweet_count, place, location, sep='*')
+        print('---------------')
+
+
     
 # =============================================================================
 #     #testing storeTweet function
